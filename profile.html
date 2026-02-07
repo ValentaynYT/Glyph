@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="dashboard">
+    <h1>Профиль</h1>
+
+    <div class="section">
+        <h2>👤 Личные данные</h2>
+        <form method="POST" class="profile-form">
+            <label>Логин</label>
+            <input type="text" value="{{ user.username }}" disabled>
+            <label>ФИО</label>
+            <input type="text" name="full_name" value="{{ user.full_name }}">
+            <label>Класс</label>
+            <input type="text" name="class_name" value="{{ user.class_name }}" placeholder="Например: 9А">
+            <button type="submit">Сохранить</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>⚠️ Мои аллергии</h2>
+        <p>Отметьте продукты, на которые у вас аллергия. Блюда с этими аллергенами будут подсвечены в меню.</p>
+        <div class="allergies-list">
+            {% for allergy in allergies %}
+            <a href="{{ url_for('toggle_allergy', allergy_id=allergy.id) }}" class="allergy-tag {% if allergy.id in user_allergies %}active{% endif %}">
+                {{ allergy.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>💳 Информация</h2>
+        <p><strong>Баланс:</strong> {{ user.balance }} ₽</p>
+        <p><strong>Роль:</strong> {% if user.role == 'student' %}Ученик{% elif user.role == 'cook' %}Повар{% elif user.role == 'admin' %}Администратор{% else %}{{ user.role }}{% endif %}</p>
+    </div>
+</div>
+{% endblock %}
