@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👤</text></svg>">
+    <title>Создание пользователей</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: rgb(39,40,43);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .create-user-container {
+            background: rgb(22, 23, 39);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(93, 113, 245, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .page-title {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #00ff88;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .flash-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 15px;
+            line-height: 1.5;
+            text-align: left;
+            border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.05);
+            transition: opacity 0.3s ease;
+        }
+
+        .flash-success {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+        }
+
+        .flash-danger {
+            background: rgba(255, 69, 58, 0.1);
+            border-color: rgba(255, 69, 58, 0.3);
+            color: #ff4757;
+        }
+
+        .flash-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+        }
+
+        .info-box {
+            background: rgba(93, 113, 245, 0.1);
+            border-left: 4px solid rgba(93, 113, 245, 0.5);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 25px;
+            font-size: 14px;
+            text-align: left;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #00ff88;
+        }
+
+        .info-box code {
+            background: rgba(93, 113, 245, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            border-color: #5d71f5;
+            box-shadow: 0 0 0 3px rgba(93, 113, 245, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-select option {
+            background: rgb(22, 23, 39);
+            color: white;
+            padding: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(0deg, rgba(93,113,245,1) 34%, rgba(76,81,255,1) 78%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(93, 113, 245, 0.4);
+        }
+
+        .copy-btn {
+            background: linear-gradient(0deg, rgba(0, 255, 136, 0.7) 34%, rgba(0, 200, 100, 1) 78%);
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            box-shadow: 0 6px 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .copy-btn.success {
+            background: linear-gradient(0deg, rgba(0, 255, 136, 1) 34%, rgba(0, 180, 90, 1) 78%);
+            transform: scale(1.02);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #5d71f5;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 10px;
+            border-radius: 6px;
+            background: rgba(93, 113, 245, 0.1);
+        }
+
+        .back-link:hover {
+            color: #00ff88;
+            background: rgba(93, 113, 245, 0.2);
+            text-decoration: none;
+        }
+
+        .icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        /* Анимация для кнопки копирования */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .create-user-container {
+                padding: 30px 20px;
+                margin-top: 20px;
+            }
+
+            .page-title {
+                font-size: 1.8em;
+            }
+
+            .btn {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .form-select {
+                padding: 10px 12px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .create-user-container {
+                padding: 25px 15px;
+                border-radius: 10px;
+            }
+
+            .page-title {
+                font-size: 1.6em;
+            }
+
+            .info-box {
+                font-size: 13px;
+                padding: 12px;
+            }
+        }
+
+        /* Стили для пользовательских данных в flash-сообщении */
+        .user-data {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-data-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-data-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .data-label {
+            font-weight: bold;
+            color: #00ff88;
+            display: inline-block;
+            width: 160px;
+        }
+
+        .data-value {
+            color: white;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="create-user-container">
+        <h1 class="page-title">👤 Создание аккаунта</h1>
+
+        <!-- Flash-сообщения -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}" id="flash-message">
+                        {% if category == 'success' %}
+                            <div style="margin-bottom: 10px;">
+                                <strong>✅ Пользователь создан успешно!</strong>
+                            </div>
+                            <div class="user-data">
+                                {% for line in message.split('<br>') %}
+                                    {% if line %}
+                                        <div class="user-data-item">
+                                            <span class="data-label">
+                                                {% if 'Email:' in line %}Email:
+                                                {% elif 'Пароль:' in line %}Пароль:
+                                                {% elif 'Домен компании' in line %}Домен:
+                                                {% else %}{% endif %}
+                                            </span>
+                                            <span class="data-value">
+                                                {{ line | replace('<strong>', '') | replace('</strong>', '') | replace('Email:', '') | replace('Пароль:', '') | replace('Домен компании для входа:', '') | trim }}
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div style="margin-top: 15px; font-size: 13px; color: rgba(255,255,255,0.7);">
+                                🔒 Обязательно сохраните эти данные, они больше не будут показаны!
+                            </div>
+                        {% else %}
+                            {{ message | safe }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="info-box">
+            <strong>🔐 Система автоматической генерации</strong><br><br>
+            • Для <strong>Рабочего</strong>: <code>workowner@XXXXXXX</code><br>
+            • Для <strong>Заказчика</strong>: <code>customer@XXXXXXX</code><br><br>
+            где <code>XXXXXXX</code> — 7 случайных цифр.<br>
+            Пароль генерируется как 8 случайных цифр, <strong>не совпадающих</strong> с email.
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="role-select">Выберите роль пользователя:</label>
+                <select id="role-select" name="role" class="form-select" required>
+                    <option value="" disabled selected>-- Выберите роль --</option>
+                    <option value="worker">👷 Рабочий (может добавлять товары и полки)</option>
+                    <option value="customer">🛒 Заказчик (может просматривать товары и создавать заявки)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">
+                <span class="icon">⚡</span> Создать аккаунт
+            </button>
+        </form>
+
+        <!-- Кнопка копирования данных -->
+        {% if get_flashed_messages(category_filter=["success"]) %}
+        <button id="copy-btn" class="btn copy-btn">
+            <span class="icon">📋</span> Копировать данные пользователя
+        </button>
+        {% endif %}
+
+        <a href="{{ url_for('owner_dashboard') }}" class="back-link">
+            <span class="icon">←</span> Вернуться в панель управления
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessage = document.getElementById('flash-message');
+            const backLink = document.querySelector('.back-link');
+            let clearFlashTimeout = null;
+
+            // Функция для очистки flash-сообщения
+            function clearFlashMessage() {
+                if (flashMessage) {
+                    flashMessage.style.opacity = '0';
+                    setTimeout(() => {
+                        flashMessage.remove();
+                    }, 300); // плавное исчезновение
+                }
+                if (clearFlashTimeout) {
+                    clearTimeout(clearFlashTimeout);
+                }
+            }
+
+            // Автоочистка через 10 секунд
+            if (flashMessage) {
+                clearFlashTimeout = setTimeout(clearFlashMessage, 8000); // 10 секунд
+            }
+
+            // Очистка при клике на "Вернуться"
+            if (backLink) {
+                backLink.addEventListener('click', clearFlashMessage);
+            }
+
+            // Очистка при уходе со страницы (на всякий случай)
+            window.addEventListener('beforeunload', clearFlashMessage);
+
+            // --- Логика копирования (оставлена без изменений) ---
+            const copyBtn = document.getElementById('copy-btn');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', async function() {
+                    try {
+                        if (!flashMessage) return;
+
+                        const userDataItems = flashMessage.querySelectorAll('.user-data-item');
+                        let copyText = '';
+
+                        userDataItems.forEach(item => {
+                            const label = item.querySelector('.data-label')?.textContent?.trim() || '';
+                            const value = item.querySelector('.data-value')?.textContent?.trim() || '';
+                            if (label && value) {
+                                copyText += `${label} ${value}\n`;
+                            }
+                        });
+
+                        if (!copyText.trim()) {
+                            const text = flashMessage.textContent;
+                            const lines = text.split('\n').filter(line => line.trim());
+                            copyText = lines.join('\n');
+                        }
+
+                        if (!copyText.trim()) {
+                            throw new Error('Не удалось извлечь данные для копирования');
+                        }
+
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(copyText.trim());
+
+                            const originalText = copyBtn.innerHTML;
+                            copyBtn.innerHTML = '<span class="icon">✅</span> Данные скопированы!';
+                            copyBtn.classList.add('success', 'pulse');
+
+                            setTimeout(() => {
+                                copyBtn.innerHTML = originalText;
+                                copyBtn.classList.remove('success', 'pulse');
+                            }, 2000);
+                        } else {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = copyText.trim();
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(textArea);
+
+                            const originalText = copyBtn.innerHTML;
+                            copyBtn.innerHTML = '<span class="icon">✅</span> Данные скопированы!';
+                            copyBtn.classList.add('success', 'pulse');
+
+                            setTimeout(() => {
+                                copyBtn.innerHTML = originalText;
+                                copyBtn.classList.remove('success', 'pulse');
+                            }, 2000);
+                        }
+                    } catch (error) {
+                        console.error('Ошибка копирования:', error);
+                        alert('Не удалось скопировать данные. Скопируйте вручную из сообщения выше.');
+                    }
+                });
+            }
+
+            // Анимация появления контейнера
+            const container = document.querySelector('.create-user-container');
+            if (container) {
+                container.style.opacity = '0';
+                container.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    container.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    container.style.opacity = '1';
+                    container.style.transform = 'translateY(0)';
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
