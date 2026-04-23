@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель заказчика</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            background: rgb(39,40,43);
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 120px;
+        }
+
+        .top-menu {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            padding: 25px;
+            background-color: rgb(22, 23, 39);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-menu a {
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 50px;
+            background: linear-gradient(0deg, rgba(93,113,245,1) 34%, rgba(76,81,255,1) 78%);
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .top-menu a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(93, 113, 245, 0.4);
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 1200px;
+            margin-bottom: 40px;
+            gap: 25px;
+        }
+
+        .dashboard-section {
+            width: 100%;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard-section h2 {
+            margin-top: 0;
+            color: #00ff88;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-section p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: rgba(93, 113, 245, 0.3);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid rgba(93, 113, 245, 0.5);
+        }
+
+        .dashboard-link:hover {
+            background: rgba(93, 113, 245, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* ===== ПРОФИЛЬ И ЧАТ ===== */
+        .profile-button {
+            position: absolute;
+            right: 50px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 12px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(0deg, rgba(93,113,245,1) 34%, rgba(76,81,255,1) 78%);
+        }
+
+        .profile-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(93, 113, 245, 0.4);
+        }
+
+        .new-messages-notification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .profile-modal {
+            display: none;
+            position: absolute;
+            right: 50px;
+            top: 75px;
+            background-color: rgb(22, 23, 39);
+            color: white;
+            width: 320px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            overflow: hidden;
+            border: 1px solid rgba(93, 113, 245, 0.3);
+        }
+
+        .profile-modal-header {
+            padding: 15px;
+            background: rgba(93, 113, 245, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .profile-modal-content {
+            padding: 15px;
+        }
+
+        .profile-info {
+            margin-bottom: 15px;
+        }
+
+        .profile-info-item {
+            display: flex;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .profile-info-label {
+            color: rgba(255, 255, 255, 0.7);
+            min-width: 100px;
+            font-weight: bold;
+        }
+
+        .profile-info-value {
+            color: white;
+            word-break: break-all;
+        }
+
+        .profile-tabs {
+            display: flex;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-tab {
+            flex: 1;
+            padding: 8px 5px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .profile-tab.active {
+            color: white;
+            background: rgba(93, 113, 245, 0.3);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .profile-tab-content {
+            display: none;
+        }
+
+        .profile-tab-content.active {
+            display: block;
+        }
+
+        .chat-container {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            background: rgba(93, 113, 245, 0.2);
+            font-size: 13px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 5px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 13px;
+        }
+
+        .chat-send {
+            padding: 8px 12px;
+            background: rgba(93, 113, 245, 0.3);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .chat-send:hover {
+            background: rgba(93, 113, 245, 0.6);
+        }
+
+        /* ===== ТЕХПОДДЕРЖКА ===== */
+        .support-container {
+            padding: 5px;
+        }
+
+        .support-info {
+            background: rgba(93, 113, 245, 0.1);
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 12px;
+        }
+
+        .email-button {
+            display: inline-block;
+            padding: 10px 14px;
+            font-size: 14px;
+            background: rgba(93, 113, 245, 0.2);
+            color: #5d71f5;
+            border: 1px solid rgba(93, 113, 245, 0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 5px;
+        }
+
+        .email-button:hover {
+            background: rgba(93, 113, 245, 0.3);
+            color: #7d8df7;
+            transform: scale(1.02);
+        }
+
+        .telegram-button {
+            width: 100%;
+            padding: 9px 14px;
+            background: linear-gradient(0deg, #0088cc 34%, #00aced 78%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12.5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        .telegram-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 136, 204, 0.3);
+            background: linear-gradient(0deg, #0077b5 34%, #0099e6 78%);
+        }
+
+        .support-tips {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+            font-size: 11px;
+        }
+
+        .support-tips ul {
+            margin: 5px 0;
+            padding-left: 15px;
+        }
+
+        .support-tips li {
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .or-text {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            margin: 2px 0;
+            font-style: italic;
+        }
+
+        /* Стили для уведомления о копировании */
+        .copy-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .copy-notification.show {
+            opacity: 1;
+        }
+
+        .logout-button {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 69, 58, 0.3);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        .logout-button:hover {
+            background: rgba(255, 69, 58, 0.6);
+        }
+
+        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
+        .notification-badge {
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 8px;
+            font-size: 12px;
+            margin-left: 8px;
+            font-weight: bold;
+            min-width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(93,113,245,0.2) 0%, rgba(0,255,136,0.1) 100%);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .welcome-section h1 {
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .quick-search-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: center;
+        }
+
+        .quick-search-form input {
+            padding: 12px 15px;
+            width: 70%;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quick-search-form input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .quick-search-form input:focus {
+            outline: none;
+            border-color: #5d71f5;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .quick-search-form button {
+            padding: 12px 25px;
+            background: linear-gradient(0deg, rgba(93,113,245,1) 34%, rgba(76,81,255,1) 78%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .quick-search-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(93, 113, 245, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #5d71f5;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .products-table th, .products-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .products-table th {
+            background: rgba(93, 113, 245, 0.3);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .products-table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .shelf-name {
+            background: rgba(93, 113, 245, 0.2);
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .no-shelf {
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+        }
+
+        .product-content {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .action-button {
+            padding: 8px 12px;
+            background: rgba(0, 255, 136, 0.3);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+
+        .action-button:hover {
+            background: rgba(0, 255, 136, 0.6);
+        }
+
+        .action-button.secondary {
+            background: rgba(93, 113, 245, 0.3);
+        }
+
+        .action-button.secondary:hover {
+            background: rgba(93, 113, 245, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 140px;
+            }
+
+            .top-menu {
+                flex-wrap: wrap;
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .top-menu a {
+                padding: 10px 15px;
+                font-size: 14px;
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+
+            .profile-button {
+                right: 20px;
+                position: fixed;
+                top: 15px;
+            }
+
+            .profile-modal {
+                right: 20px;
+                top: 70px;
+                width: 280px;
+            }
+
+            .dashboard-container {
+                padding: 20px;
+                width: 95%;
+            }
+
+            .quick-search-form {
+                flex-direction: column;
+            }
+
+            .quick-search-form input {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .products-table {
+                font-size: 12px;
+            }
+
+            .products-table th, .products-table td {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-menu a {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+
+            .dashboard-section {
+                padding: 15px;
+            }
+
+            .welcome-section h1 {
+                font-size: 2em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-modal {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Уведомление о копировании -->
+    <div id="copyNotification" class="copy-notification">Email скопирован!</div>
+    
+    <!-- Верхнее меню с навигацией -->
+    <div class="top-menu">
+        <a href="{{ url_for('customer_products') }}">
+             Товары в наличии
+        </a>
+        <a href="{{ url_for('customer_search') }}"> Поиск товаров</a>
+        <a href="{{ url_for('customer_requests') }}">
+             Мои заявки
+        </a>
+        <a href="{{ url_for('customer_dashboard') }}"> Главная</a>
+
+        <button class="profile-button" id="profile-button">
+            👤
+            <span class="new-messages-notification" id="new-messages-notification"></span>
+        </button>
+        <div class="profile-modal" id="profile-modal">
+            <div class="profile-modal-header">Профиль пользователя</div>
+            <div class="profile-modal-content">
+                <div class="profile-info">
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Email:</span>
+                        <span class="profile-info-value">{{ session['user_email'] }}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Роль:</span>
+                        <span class="profile-info-value">Заказчик</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Компания:</span>
+                        <span class="profile-info-value">{{ session['company_name'] }}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Домен:</span>
+                        <span class="profile-info-value">{{ session['company_domain'] }}</span>
+                    </div>
+                </div>
+
+                <div class="profile-tabs">
+                    <button class="profile-tab active" data-tab="info">Информация</button>
+                    <button class="profile-tab" data-tab="chat">
+                        Чат
+                        <span class="new-messages-notification" id="chat-tab-notification"></span>
+                    </button>
+                    <button class="profile-tab" data-tab="support">Техподдержка</button>
+                </div>
+
+                <div class="profile-tab-content active" data-tab="info">
+                    <div style="text-align: center; padding: 10px; color: rgba(255,255,255,0.7);">
+                        Вы вошли как заказчик компании "{{ session['company_name'] }}"
+                    </div>
+                </div>
+
+                <div class="profile-tab-content" data-tab="chat">
+                    <div class="chat-container" id="chat-messages">
+                        <!-- Сообщения будут здесь -->
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" class="chat-input" id="chat-input" placeholder="Введите сообщение...">
+                        <button class="chat-send" id="chat-send">→</button>
+                    </div>
+                </div>
+
+                <div class="profile-tab-content" data-tab="support">
+                    <div class="support-container">
+                        <h3 style="margin-top: 0; color: #fff; text-align: center; font-size: 14px; margin-bottom: 10px;">Обратиться в техподдержку</h3>
+                        
+                        <div class="support-info">
+                            <p style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.8);">
+                                Если у вас возникли технические проблемы или вопросы по работе системы, напишите на:
+                            </p>
+                        </div>
+                        
+                        <div class="buttons-container">
+                            <button class="email-button" id="copy-email-button" title="Нажмите, чтобы скопировать email">
+                                <i class="fas fa-envelope" style="margin-right: 8px;"></i>
+                                Email: valentin.borisov.ru@gmail.com
+                            </button>
+                            
+                            <div class="or-text">или</div>
+                            
+                            <a href="https://t.me/ValentaynYT" target="_blank" class="telegram-button" id="telegram-button">
+                                <i class="fab fa-telegram" style="font-size: 13.5px;"></i>
+                                Написать оператору в Telegram
+                            </a>
+                        </div>
+                        
+                        <div class="support-tips">
+                            <h4 style="margin-top: 0; color: #fff; font-size: 12px; margin-bottom: 5px;">Что указать в письме/сообщении:</h4>
+                            <ul style="color: rgba(255,255,255,0.7);">
+                                <li><strong>Email:</strong> {{ session['user_email'] }}</li>
+                                <li><strong>Роль:</strong> Заказчик</li>
+                                <li><strong>Компания:</strong> {{ session['company_name'] }}</li>
+                                <li><strong>Домен компании:</strong> {{ session['company_domain'] }}</li>
+                                <li>Подробное описание проблемы</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="logout-button" onclick="window.location.href='{{ url_for('logout') }}'">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Приветствие -->
+        <div class="welcome-section">
+            <h1>Добро пожаловать! 👋</h1>
+            <p id="current-date">Сегодня: Загрузка даты...</p>
+        </div>
+
+        <!-- Общая статистика -->
+        <div class="dashboard-section">
+            <h2>📊 Общая статистика</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_products }}</div>
+                    <div class="stat-label">Всего товаров</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ user_requests_count }}</div>
+                    <div class="stat-label">Активных заявок</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="unique-products">0</div>
+                    <div class="stat-label">Уникальных товаров</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="products-without-shelf">0</div>
+                    <div class="stat-label">Товаров без полки</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Товары -->
+        <div class="dashboard-section">
+            <h2>📦 Товары в наличии</h2>
+            <p>Доступно для заказа: <strong>{{ total_products }}</strong> товаров</p>
+            <p>Новых поступлений: <strong id="new-products">0</strong></p>
+
+            <div id="recent-products">
+                <h3>Последние добавленные товары:</h3>
+                <div class="loading">Загрузка товаров...</div>
+            </div>
+
+            <a href="{{ url_for('customer_products') }}" class="dashboard-link">
+                Посмотреть все товары →
+            </a>
+        </div>
+
+        <!-- Поиск -->
+        <div class="dashboard-section">
+            <h2>🔍 Поиск товаров</h2>
+            <p>Используйте систему поиска для быстрого нахождения нужных товаров</p>
+
+            <!-- Быстрая форма поиска -->
+            <form action="{{ url_for('customer_search') }}" method="GET" class="quick-search-form" id="search-form">
+                <input type="text" name="q" placeholder="Введите название товара, артикул или содержимое QR-кода..." required>
+                <button type="submit">Найти</button>
+            </form>
+
+            <a href="{{ url_for('customer_search') }}" class="dashboard-link">
+                Расширенный поиск →
+            </a>
+        </div>
+
+        <!-- Быстрые действия -->
+        <div class="dashboard-section">
+            <h2>⚡ Быстрые действия</h2>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <button class="action-button secondary" onclick="window.location.href='{{ url_for('customer_products') }}'">
+                    📦 Все товары
+                </button>
+                <button class="action-button secondary" onclick="window.location.href='{{ url_for('customer_requests') }}'">
+                    📋 Мои заявки
+                </button>
+                <button class="action-button secondary" onclick="window.location.href='{{ url_for('customer_search') }}'">
+                    🔍 Поиск
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ ЧАТА =====
+        let lastMessageId = 0;
+        let unreadMessages = 0;
+        let chatInitialized = false;
+        let messagePollingInterval = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация даты
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            };
+            document.getElementById('current-date').textContent =
+                'Сегодня: ' + now.toLocaleDateString('ru-RU', options);
+
+            // Управление модальным окном профиля
+            const profileButton = document.getElementById('profile-button');
+            const profileModal = document.getElementById('profile-modal');
+
+            profileButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                profileModal.style.display = profileModal.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!profileButton.contains(event.target) && !profileModal.contains(event.target)) {
+                    profileModal.style.display = 'none';
+                }
+            });
+
+            // Инициализация вкладок профиля
+            const profileTabs = document.querySelectorAll('.profile-tab');
+            if (profileTabs) {
+                profileTabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.profile-tab-content').forEach(c => c.classList.remove('active'));
+
+                        this.classList.add('active');
+                        document.querySelector(`.profile-tab-content[data-tab="${this.dataset.tab}"]`).classList.add('active');
+
+                        // Если открыли вкладку чата, инициализируем его
+                        if (this.dataset.tab === 'chat') {
+                            initChat();
+                            unreadMessages = 0;
+                            updateNotifications();
+                        }
+                    });
+                });
+            }
+
+            // Функция для показа уведомления
+            function showCopyNotification() {
+                const notification = document.getElementById('copyNotification');
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
+            }
+
+            // Обработчик для кнопки копирования email
+            const copyEmailButton = document.getElementById('copy-email-button');
+            if (copyEmailButton) {
+                copyEmailButton.addEventListener('click', async function() {
+                    const email = 'valentin.borisov.ru@gmail.com';
+                    
+                    try {
+                        // Пробуем использовать современный Clipboard API
+                        await navigator.clipboard.writeText(email);
+                        showCopyNotification();
+                        
+                        // Меняем текст кнопки временно
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check" style="margin-right: 8px;"></i>Email скопирован!';
+                        this.style.background = 'rgba(76, 175, 80, 0.3)';
+                        this.style.color = '#4CAF50';
+                        this.style.borderColor = '#4CAF50';
+                        
+                        // Возвращаем исходный текст через 2 секунды
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.style.background = 'rgba(93, 113, 245, 0.2)';
+                            this.style.color = '#5d71f5';
+                            this.style.borderColor = 'rgba(93, 113, 245, 0.3)';
+                        }, 2000);
+                        
+                    } catch (err) {
+                        // Fallback для старых браузеров
+                        const textArea = document.createElement('textarea');
+                        textArea.value = email;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        textArea.style.top = '-999999px';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        
+                        try {
+                            document.execCommand('copy');
+                            showCopyNotification();
+                        } catch (err2) {
+                            alert('Не удалось скопировать email. Скопируйте вручную: ' + email);
+                        }
+                        
+                        document.body.removeChild(textArea);
+                    }
+                });
+            }
+
+            // Обработчик для кнопки Telegram
+            const telegramButton = document.getElementById('telegram-button');
+            if (telegramButton) {
+                telegramButton.addEventListener('click', function(event) {
+                    console.log('Открытие Telegram...');
+                });
+            }
+
+            // Загрузка данных с сервера
+            loadDashboardData();
+        });
+
+        // ===== ИНИЦИАЛИЗАЦИЯ ЧАТА =====
+        function initChat() {
+            if (chatInitialized) return;
+            chatInitialized = true;
+
+            loadAllMessages();
+
+            // Обработчик отправки сообщения
+            document.getElementById('chat-send')?.addEventListener('click', () => {
+                const input = document.getElementById('chat-input');
+                if (input) {
+                    const message = input.value.trim();
+                    if (message) {
+                        sendChatMessage(message);
+                        input.value = '';
+                    }
+                }
+            });
+
+            // Отправка сообщения по Enter
+            document.getElementById('chat-input')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('chat-send')?.click();
+                }
+            });
+
+            // Запускаем опрос новых сообщений
+            startMessagePolling();
+        }
+
+        // ===== ФУНКЦИИ ЧАТА =====
+        function loadAllMessages() {
+            fetch('/get_messages')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.messages && data.messages.length > 0) {
+                        const messagesContainer = document.getElementById('chat-messages');
+                        if (messagesContainer) {
+                            messagesContainer.innerHTML = '';
+                            data.messages.forEach(msg => {
+                                addMessageToChat(msg);
+                                lastMessageId = Math.max(lastMessageId, msg.id);
+                            });
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    }
+                })
+                .catch(error => console.error('Ошибка загрузки сообщений:', error));
+        }
+
+        function loadNewMessages() {
+            fetch(`/get_messages?last_id=${lastMessageId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.messages && data.messages.length > 0) {
+                        const messagesContainer = document.getElementById('chat-messages');
+                        if (messagesContainer) {
+                            data.messages.forEach(msg => {
+                                // Проверяем, нет ли уже этого сообщения
+                                if (msg.id > lastMessageId) {
+                                    addMessageToChat(msg);
+                                    lastMessageId = msg.id;
+
+                                    // Если чат не активен, увеличиваем счетчик непрочитанных
+                                    const chatTab = document.querySelector('.profile-tab[data-tab="chat"]');
+                                    if (chatTab && !chatTab.classList.contains('active')) {
+                                        unreadMessages++;
+                                        updateNotifications();
+                                    }
+                                }
+                            });
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    }
+                })
+                .catch(error => console.error('Ошибка загрузки новых сообщений:', error));
+        }
+
+        function addMessageToChat(msg) {
+            const messagesContainer = document.getElementById('chat-messages');
+            if (!messagesContainer) return;
+
+            // Проверяем, нет ли уже такого сообщения
+            const existingMessage = messagesContainer.querySelector(`[data-message-id="${msg.id}"]`);
+            if (existingMessage) return;
+
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chat-message';
+            messageElement.dataset.messageId = msg.id;
+
+            // Форматируем время
+            const timestamp = new Date(msg.timestamp);
+            const timeString = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            messageElement.innerHTML = `
+                <strong>${msg.sender} (${msg.role}):</strong> ${msg.message}
+                <span style="font-size: 10px; color: rgba(255,255,255,0.5); margin-left: 10px;">
+                    ${timeString}
+                </span>
+            `;
+            messagesContainer.appendChild(messageElement);
+        }
+
+        function sendChatMessage(message) {
+            fetch('/send_message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    // Добавляем отправленное сообщение сразу в чат
+                    addMessageToChat(data.data);
+                    lastMessageId = Math.max(lastMessageId, data.data.id);
+
+                    const messagesContainer = document.getElementById('chat-messages');
+                    if (messagesContainer) {
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                } else {
+                    console.error('Ошибка отправки:', data.message);
+                }
+            })
+            .catch(error => console.error('Ошибка:', error));
+        }
+
+        function startMessagePolling() {
+            if (messagePollingInterval) {
+                clearInterval(messagePollingInterval);
+            }
+            messagePollingInterval = setInterval(loadNewMessages, 2000);
+        }
+
+        function stopMessagePolling() {
+            if (messagePollingInterval) {
+                clearInterval(messagePollingInterval);
+                messagePollingInterval = null;
+            }
+        }
+
+        function updateNotifications() {
+            const notificationElements = document.querySelectorAll('.new-messages-notification');
+            notificationElements.forEach(el => {
+                el.style.display = unreadMessages > 0 ? 'flex' : 'none';
+                el.textContent = unreadMessages > 9 ? '9+' : unreadMessages;
+            });
+        }
+
+        // ===== ФУНКЦИИ ДЛЯ ДАШБОРДА =====
+        function loadDashboardData() {
+            // Загрузка товаров
+            fetch('/get_products')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(products => {
+                    updateProductsStats(products);
+                    displayRecentProducts(products);
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки товаров:', error);
+                    document.getElementById('recent-products').innerHTML = '<p>Ошибка загрузки товаров</p>';
+                });
+        }
+
+        // Обновление статистики товаров
+        function updateProductsStats(products) {
+            const totalProducts = products.length;
+            const productsWithoutShelf = products.filter(p => !p.shelf).length;
+
+            // Подсчет уникальных товаров (по содержимому QR-кода)
+            const uniqueProducts = [...new Set(products.map(p => p.qr_content))].length;
+
+            // Новые товары (добавлены за последние 7 дней)
+            const newProducts = products.filter(p => {
+                if (!p.created_at) return false;
+                const addedDate = new Date(p.created_at);
+                const daysDiff = (Date.now() - addedDate) / (1000 * 60 * 60 * 24);
+                return daysDiff <= 7;
+            }).length;
+
+            document.getElementById('new-products').textContent = newProducts;
+            document.getElementById('products-without-shelf').textContent = productsWithoutShelf;
+            document.getElementById('unique-products').textContent = uniqueProducts;
+        }
+
+        // Отображение последних добавленных товаров
+        function displayRecentProducts(products) {
+            const container = document.getElementById('recent-products');
+
+            // Сортируем товары по дате добавления (последние сначала)
+            const sortedProducts = [...products].sort((a, b) => {
+                const dateA = new Date(a.created_at || 0);
+                const dateB = new Date(b.created_at || 0);
+                return dateB - dateA;
+            }).slice(0, 5); // Берем только 5 последних товаров
+
+            if (sortedProducts.length === 0) {
+                container.innerHTML = '<p>Товаров пока нет</p>';
+                return;
+            }
+
+            let html = '<h3>Последние добавленные товары:</h3><table class="products-table"><thead><tr><th>ID</th><th>Содержимое</th><th>Полка</th><th>Действия</th></tr></thead><tbody>';
+
+            sortedProducts.forEach(product => {
+                html += `
+                    <tr>
+                        <td>${product.id}</td>
+                        <td class="product-content">${product.qr_content}</td>
+                        <td>
+                            ${product.shelf ?
+                                `<span class="shelf-name">${product.shelf.name}</span>` :
+                                `<span class="no-shelf">Не назначена</span>`
+                            }
+                        </td>
+                        <td>
+                            <button class="action-button" onclick="createRequest(${product.id})">📝 Заявка</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Функция создания заявки
+        function createRequest(productId) {
+            if (confirm('Вы уверены, что хотите подать заявку на этот товар?')) {
+                fetch('/create_request/' + productId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`Server error: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert('Заявка успешно создана!');
+                        // Обновляем счетчик заявок
+                        const currentCount = parseInt(document.getElementById('user_requests_count').textContent);
+                        document.getElementById('user_requests_count').textContent = currentCount + 1;
+                    } else {
+                        alert('Ошибка при создании заявки: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Произошла ошибка при создании заявки: ' + error.message);
+                });
+            }
+        }
+
+        // При закрытии страницы останавливаем опрос
+        window.addEventListener('beforeunload', function() {
+            stopMessagePolling();
+        });
+    </script>
+</body>
+</html>
