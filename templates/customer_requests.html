@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мои заявки - Панель заказчика</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -51,7 +52,6 @@
             transform: scale(1.05);
             box-shadow: 0 4px 15px rgba(93, 113, 245, 0.4);
         }
-        /* Убираем зеленую подсветку для активной кнопки */
         .dashboard-container {
             display: flex;
             flex-direction: column;
@@ -102,6 +102,8 @@
             background: rgba(93, 113, 245, 0.6);
             transform: translateY(-2px);
         }
+
+        /* ===== ПРОФИЛЬ И ЧАТ ===== */
         .profile-button {
             position: absolute;
             right: 50px;
@@ -119,41 +121,289 @@
             border-radius: 50%;
             background: linear-gradient(0deg, rgba(93,113,245,1) 34%, rgba(76,81,255,1) 78%);
         }
+
         .profile-button:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(93, 113, 245, 0.4);
         }
+
+        .new-messages-notification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
+        }
+
         .profile-modal {
             display: none;
             position: absolute;
             right: 50px;
             top: 75px;
-            background-color: white;
-            color: black;
-            width: 180px;
+            background-color: rgb(22, 23, 39);
+            color: white;
+            width: 320px;
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             z-index: 1001;
             overflow: hidden;
-            border: 1px solid #e0e0e0;
+            border: 1px solid rgba(93, 113, 245, 0.3);
         }
-        .profile-modal a {
-            display: block;
-            padding: 15px 20px;
-            color: #333;
-            text-decoration: none;
-            text-align: left;
+
+        .profile-modal-header {
+            padding: 15px;
+            background: rgba(93, 113, 245, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .profile-modal-content {
+            padding: 15px;
+        }
+
+        .profile-info {
+            margin-bottom: 15px;
+        }
+
+        .profile-info-item {
+            display: flex;
+            margin-bottom: 10px;
             font-size: 14px;
-            border-bottom: 1px solid #f0f0f0;
         }
-        .profile-modal a:hover {
-            background-color: #f8f9fa;
+
+        .profile-info-label {
+            color: rgba(255, 255, 255, 0.7);
+            min-width: 100px;
+            font-weight: bold;
+        }
+
+        .profile-info-value {
+            color: white;
+            word-break: break-all;
+        }
+
+        .profile-tabs {
+            display: flex;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-tab {
+            flex: 1;
+            padding: 8px 5px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .profile-tab.active {
+            color: white;
+            background: rgba(93, 113, 245, 0.3);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .profile-tab-content {
+            display: none;
+        }
+
+        .profile-tab-content.active {
+            display: block;
+        }
+
+        .chat-container {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            background: rgba(93, 113, 245, 0.2);
+            font-size: 13px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 5px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 13px;
+        }
+
+        .chat-send {
+            padding: 8px 12px;
+            background: rgba(93, 113, 245, 0.3);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .chat-send:hover {
+            background: rgba(93, 113, 245, 0.6);
+        }
+
+        /* ===== ТЕХПОДДЕРЖКА ===== */
+        .support-container {
+            padding: 5px;
+        }
+
+        .support-info {
+            background: rgba(93, 113, 245, 0.1);
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 12px;
+        }
+
+        .email-button {
+            display: inline-block;
+            padding: 10px 14px;
+            font-size: 14px;
+            background: rgba(93, 113, 245, 0.2);
             color: #5d71f5;
+            border: 1px solid rgba(93, 113, 245, 0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 5px;
         }
-        .profile-modal a:last-child {
-            border-bottom: none;
+
+        .email-button:hover {
+            background: rgba(93, 113, 245, 0.3);
+            color: #7d8df7;
+            transform: scale(1.02);
         }
-        /* Убираем стили для бейджа уведомлений */
+
+        .telegram-button {
+            width: 100%;
+            padding: 9px 14px;
+            background: linear-gradient(0deg, #0088cc 34%, #00aced 78%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12.5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        .telegram-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 136, 204, 0.3);
+            background: linear-gradient(0deg, #0077b5 34%, #0099e6 78%);
+        }
+
+        .support-tips {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+            font-size: 11px;
+        }
+
+        .support-tips ul {
+            margin: 5px 0;
+            padding-left: 15px;
+        }
+
+        .support-tips li {
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .or-text {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            margin: 2px 0;
+            font-style: italic;
+        }
+
+        /* Стили для уведомления о копировании */
+        .copy-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .copy-notification.show {
+            opacity: 1;
+        }
+
+        .logout-button {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 69, 58, 0.3);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        .logout-button:hover {
+            background: rgba(255, 69, 58, 0.6);
+        }
+
+        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
         .welcome-section {
             text-align: center;
             padding: 30px;
@@ -451,16 +701,24 @@
         .cancel-form-btn:hover {
             background: rgba(255, 71, 87, 0.6);
         }
-        /* Стили для полей выбора в модальном окне создания заявки */
         #request-type, #request-priority {
-            background: rgb(22, 23, 39) !important; /* Темно-синий фон */
-            color: white !important; /* Белый текст */
-            border: 1px solid rgba(93, 113, 245, 0.5) !important; /* Сlightly blue border */
+            background: rgb(22, 23, 39) !important;
+            color: white !important;
+            border: 1px solid rgba(93, 113, 245, 0.5) !important;
         }
         #request-type option, #request-priority option {
-            background: rgb(22, 23, 39) !important; /* Темно-синий фон для опций */
-            color: white !important; /* Белый текст для опций */
+            background: rgb(22, 23, 39) !important;
+            color: white !important;
         }
+        
+        /* Добавленные стили для статистики */
+        #cancelled-requests {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff4757;
+            margin-bottom: 5px;
+        }
+        
         @media (max-width: 768px) {
             body {
                 padding-top: 140px;
@@ -485,6 +743,7 @@
             .profile-modal {
                 right: 20px;
                 top: 70px;
+                width: 280px;
             }
             .dashboard-container {
                 padding: 20px;
@@ -528,10 +787,16 @@
             .request-actions {
                 flex-direction: column;
             }
+            .profile-modal {
+                width: 250px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Уведомление о копировании -->
+    <div id="copyNotification" class="copy-notification">Email скопирован!</div>
+    
     <!-- Верхнее меню с навигацией -->
     <div class="top-menu">
         <a href="{{ url_for('customer_products') }}"> Товары в наличии</a>
@@ -540,11 +805,97 @@
              Мои заявки
         </a>
         <a href="{{ url_for('customer_dashboard') }}"> Главная</a>
-        <button class="profile-button" id="profile-button">👤</button>
+
+        <button class="profile-button" id="profile-button">
+            👤
+            <span class="new-messages-notification" id="new-messages-notification"></span>
+        </button>
         <div class="profile-modal" id="profile-modal">
-            <a href="#help">Помощь</a>
-            <hr style="margin: 5px 0; border: none; border-top: 1px solid #e0e0e0;">
-            <a href="{{ url_for('logout') }}" style="color: #ff4757;">Выйти</a>
+            <div class="profile-modal-header">Профиль пользователя</div>
+            <div class="profile-modal-content">
+                <div class="profile-info">
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Email:</span>
+                        <span class="profile-info-value">{{ session['user_email'] }}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Роль:</span>
+                        <span class="profile-info-value">Заказчик</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Компания:</span>
+                        <span class="profile-info-value">{{ session['company_name'] }}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Домен:</span>
+                        <span class="profile-info-value">{{ session['company_domain'] }}</span>
+                    </div>
+                </div>
+
+                <div class="profile-tabs">
+                    <button class="profile-tab active" data-tab="info">Информация</button>
+                    <button class="profile-tab" data-tab="chat">
+                        Чат
+                        <span class="new-messages-notification" id="chat-tab-notification"></span>
+                    </button>
+                    <button class="profile-tab" data-tab="support">Техподдержка</button>
+                </div>
+
+                <div class="profile-tab-content active" data-tab="info">
+                    <div style="text-align: center; padding: 10px; color: rgba(255,255,255,0.7);">
+                        Вы вошли как заказчик компании "{{ session['company_name'] }}"
+                    </div>
+                </div>
+
+                <div class="profile-tab-content" data-tab="chat">
+                    <div class="chat-container" id="chat-messages">
+                        <!-- Сообщения будут здесь -->
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" class="chat-input" id="chat-input" placeholder="Введите сообщение...">
+                        <button class="chat-send" id="chat-send">→</button>
+                    </div>
+                </div>
+
+                <div class="profile-tab-content" data-tab="support">
+                    <div class="support-container">
+                        <h3 style="margin-top: 0; color: #fff; text-align: center; font-size: 14px; margin-bottom: 10px;">Обратиться в техподдержку</h3>
+                        
+                        <div class="support-info">
+                            <p style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.8);">
+                                Если у вас возникли технические проблемы или вопросы по работе системы, напишите на:
+                            </p>
+                        </div>
+                        
+                        <div class="buttons-container">
+                            <button class="email-button" id="copy-email-button" title="Нажмите, чтобы скопировать email">
+                                <i class="fas fa-envelope" style="margin-right: 8px;"></i>
+                                Email: valentin.borisov.ru@gmail.com
+                            </button>
+                            
+                            <div class="or-text">или</div>
+                            
+                            <a href="https://t.me/ValentaynYT" target="_blank" class="telegram-button" id="telegram-button">
+                                <i class="fab fa-telegram" style="font-size: 13.5px;"></i>
+                                Написать оператору в Telegram
+                            </a>
+                        </div>
+                        
+                        <div class="support-tips">
+                            <h4 style="margin-top: 0; color: #fff; font-size: 12px; margin-bottom: 5px;">Что указать в письме/сообщении:</h4>
+                            <ul style="color: rgba(255,255,255,0.7);">
+                                <li><strong>Email:</strong> {{ session['user_email'] }}</li>
+                                <li><strong>Роль:</strong> Заказчик</li>
+                                <li><strong>Компания:</strong> {{ session['company_name'] }}</li>
+                                <li><strong>Домен компании:</strong> {{ session['company_domain'] }}</li>
+                                <li>Подробное описание проблемы</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="logout-button" onclick="window.location.href='{{ url_for('logout') }}'">Выйти</button>
+            </div>
         </div>
     </div>
 
@@ -569,6 +920,10 @@
                 <div class="stat-item">
                     <div class="stat-number" id="completed-requests">0</div>
                     <div class="stat-label">Завершено</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="cancelled-requests">0</div>
+                    <div class="stat-label">Отменено</div>
                 </div>
             </div>
         </div>
@@ -677,7 +1032,13 @@
     </div>
 
     <script>
-        // Глобальные переменные для хранения данных
+        // ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ ЧАТА =====
+        let lastMessageId = 0;
+        let unreadMessages = 0;
+        let chatInitialized = false;
+        let messagePollingInterval = null;
+
+        // Глобальные переменные для хранения данных заявок
         let requestsData = [];
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -706,6 +1067,93 @@
                     profileModal.style.display = 'none';
                 }
             });
+
+            // Инициализация вкладок профиля
+            const profileTabs = document.querySelectorAll('.profile-tab');
+            if (profileTabs) {
+                profileTabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.profile-tab-content').forEach(c => c.classList.remove('active'));
+
+                        this.classList.add('active');
+                        document.querySelector(`.profile-tab-content[data-tab="${this.dataset.tab}"]`).classList.add('active');
+
+                        // Если открыли вкладку чата, инициализируем его
+                        if (this.dataset.tab === 'chat') {
+                            initChat();
+                            unreadMessages = 0;
+                            updateNotifications();
+                        }
+                    });
+                });
+            }
+
+            // Функция для показа уведомления
+            function showCopyNotification() {
+                const notification = document.getElementById('copyNotification');
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
+            }
+
+            // Обработчик для кнопки копирования email
+            const copyEmailButton = document.getElementById('copy-email-button');
+            if (copyEmailButton) {
+                copyEmailButton.addEventListener('click', async function() {
+                    const email = 'valentin.borisov.ru@gmail.com';
+                    
+                    try {
+                        // Пробуем использовать современный Clipboard API
+                        await navigator.clipboard.writeText(email);
+                        showCopyNotification();
+                        
+                        // Меняем текст кнопки временно
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check" style="margin-right: 8px;"></i>Email скопирован!';
+                        this.style.background = 'rgba(76, 175, 80, 0.3)';
+                        this.style.color = '#4CAF50';
+                        this.style.borderColor = '#4CAF50';
+                        
+                        // Возвращаем исходный текст через 2 секунды
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.style.background = 'rgba(93, 113, 245, 0.2)';
+                            this.style.color = '#5d71f5';
+                            this.style.borderColor = 'rgba(93, 113, 245, 0.3)';
+                        }, 2000);
+                        
+                    } catch (err) {
+                        // Fallback для старых браузеров
+                        const textArea = document.createElement('textarea');
+                        textArea.value = email;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        textArea.style.top = '-999999px';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        
+                        try {
+                            document.execCommand('copy');
+                            showCopyNotification();
+                        } catch (err2) {
+                            alert('Не удалось скопировать email. Скопируйте вручную: ' + email);
+                        }
+                        
+                        document.body.removeChild(textArea);
+                    }
+                });
+            }
+
+            // Обработчик для кнопки Telegram
+            const telegramButton = document.getElementById('telegram-button');
+            if (telegramButton) {
+                telegramButton.addEventListener('click', function(event) {
+                    console.log('Открытие Telegram...');
+                });
+            }
 
             // Загрузка данных с сервера
             loadRequestsData();
@@ -750,33 +1198,164 @@
                     newRequestModal.style.display = 'none';
                 }
             });
-
-            // Клик по ссылкам меню
-            document.querySelectorAll('.top-menu a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    if (this.getAttribute('href').startsWith('#')) {
-                        e.preventDefault();
-                    }
-                });
-            });
-
-            // Клик по ссылкам профиля
-            document.querySelectorAll('.profile-modal a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    if (!this.getAttribute('href').includes('logout')) {
-                        e.preventDefault();
-                    }
-                    profileModal.style.display = 'none';
-                });
-            });
         });
 
-        // Функция загрузки данных о заявках
+        // ===== ИНИЦИАЛИЗАЦИЯ ЧАТА =====
+        function initChat() {
+            if (chatInitialized) return;
+            chatInitialized = true;
+
+            loadAllMessages();
+
+            // Обработчик отправки сообщения
+            document.getElementById('chat-send')?.addEventListener('click', () => {
+                const input = document.getElementById('chat-input');
+                if (input) {
+                    const message = input.value.trim();
+                    if (message) {
+                        sendChatMessage(message);
+                        input.value = '';
+                    }
+                }
+            });
+
+            // Отправка сообщения по Enter
+            document.getElementById('chat-input')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('chat-send')?.click();
+                }
+            });
+
+            // Запускаем опрос новых сообщений
+            startMessagePolling();
+        }
+
+        // ===== ФУНКЦИИ ЧАТА =====
+        function loadAllMessages() {
+            fetch('/get_messages')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.messages && data.messages.length > 0) {
+                        const messagesContainer = document.getElementById('chat-messages');
+                        if (messagesContainer) {
+                            messagesContainer.innerHTML = '';
+                            data.messages.forEach(msg => {
+                                addMessageToChat(msg);
+                                lastMessageId = Math.max(lastMessageId, msg.id);
+                            });
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    }
+                })
+                .catch(error => console.error('Ошибка загрузки сообщений:', error));
+        }
+
+        function loadNewMessages() {
+            fetch(`/get_messages?last_id=${lastMessageId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.messages && data.messages.length > 0) {
+                        const messagesContainer = document.getElementById('chat-messages');
+                        if (messagesContainer) {
+                            data.messages.forEach(msg => {
+                                // Проверяем, нет ли уже этого сообщения
+                                if (msg.id > lastMessageId) {
+                                    addMessageToChat(msg);
+                                    lastMessageId = msg.id;
+
+                                    // Если чат не активен, увеличиваем счетчик непрочитанных
+                                    const chatTab = document.querySelector('.profile-tab[data-tab="chat"]');
+                                    if (chatTab && !chatTab.classList.contains('active')) {
+                                        unreadMessages++;
+                                        updateNotifications();
+                                    }
+                                }
+                            });
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    }
+                })
+                .catch(error => console.error('Ошибка загрузки новых сообщений:', error));
+        }
+
+        function addMessageToChat(msg) {
+            const messagesContainer = document.getElementById('chat-messages');
+            if (!messagesContainer) return;
+
+            // Проверяем, нет ли уже такого сообщения
+            const existingMessage = messagesContainer.querySelector(`[data-message-id="${msg.id}"]`);
+            if (existingMessage) return;
+
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chat-message';
+            messageElement.dataset.messageId = msg.id;
+
+            // Форматируем время
+            const timestamp = new Date(msg.timestamp);
+            const timeString = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            messageElement.innerHTML = `
+                <strong>${msg.sender} (${msg.role}):</strong> ${msg.message}
+                <span style="font-size: 10px; color: rgba(255,255,255,0.5); margin-left: 10px;">
+                    ${timeString}
+                </span>
+            `;
+            messagesContainer.appendChild(messageElement);
+        }
+
+        function sendChatMessage(message) {
+            fetch('/send_message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    // Добавляем отправленное сообщение сразу в чат
+                    addMessageToChat(data.data);
+                    lastMessageId = Math.max(lastMessageId, data.data.id);
+
+                    const messagesContainer = document.getElementById('chat-messages');
+                    if (messagesContainer) {
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                } else {
+                    console.error('Ошибка отправки:', data.message);
+                }
+            })
+            .catch(error => console.error('Ошибка:', error));
+        }
+
+        function startMessagePolling() {
+            if (messagePollingInterval) {
+                clearInterval(messagePollingInterval);
+            }
+            messagePollingInterval = setInterval(loadNewMessages, 2000);
+        }
+
+        function stopMessagePolling() {
+            if (messagePollingInterval) {
+                clearInterval(messagePollingInterval);
+                messagePollingInterval = null;
+            }
+        }
+
+        function updateNotifications() {
+            const notificationElements = document.querySelectorAll('.new-messages-notification');
+            notificationElements.forEach(el => {
+                el.style.display = unreadMessages > 0 ? 'flex' : 'none';
+                el.textContent = unreadMessages > 9 ? '9+' : unreadMessages;
+            });
+        }
+
+        // ===== ФУНКЦИИ ДЛЯ РАБОТЫ С ЗАЯВКАМИ =====
         function loadRequestsData() {
             const container = document.getElementById('requests-list');
             container.innerHTML = '<div class="loading">Загрузка заявок...</div>';
 
-            fetch('/api/customer_requests')
+            // Используем правильный маршрут для заказчика
+            fetch('{{ url_for("customer_requests") }}?format=json')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -807,13 +1386,13 @@
             const newRequests = requests.filter(r => r.status === 'new').length;
             const inProgressRequests = requests.filter(r => r.status === 'in-progress').length;
             const completedRequests = requests.filter(r => r.status === 'completed').length;
+            const cancelledRequests = requests.filter(r => r.status === 'cancelled').length;
 
             document.getElementById('total-requests').textContent = totalRequests;
             document.getElementById('new-requests').textContent = newRequests;
             document.getElementById('in-progress-requests').textContent = inProgressRequests;
             document.getElementById('completed-requests').textContent = completedRequests;
-
-            // УБИРАЕМ обновление бейджа уведомлений
+            document.getElementById('cancelled-requests').textContent = cancelledRequests;
         }
 
         // Отображение списка заявок
@@ -849,14 +1428,14 @@
             requests.forEach(request => {
                 const statusClass = `status-${request.status}-badge`;
                 const statusText = getStatusText(request.status);
-                const typeText = getTypeText(request.type);
+                const typeText = getTypeText(request.request_type);
                 const date = new Date(request.created_at).toLocaleDateString('ru-RU');
 
                 html += `
                     <tr>
                         <td class="request-id">#${request.id}</td>
                         <td>${typeText}</td>
-                        <td class="product-content">${request.description}</td>
+                        <td class="product-content">${request.description || 'Без описания'}</td>
                         <td class="request-date">${date}</td>
                         <td><span class="request-status ${statusClass}">${statusText}</span></td>
                         <td>
@@ -940,27 +1519,26 @@
 
             document.getElementById('modal-request-id').textContent = request.id;
             document.getElementById('modal-status').innerHTML = `<span class="request-status status-${request.status}-badge">${getStatusText(request.status)}</span>`;
-            document.getElementById('modal-type').textContent = getTypeText(request.type);
+            document.getElementById('modal-type').textContent = getTypeText(request.request_type);
             document.getElementById('modal-priority').textContent = getPriorityText(request.priority);
-            document.getElementById('modal-description').textContent = request.description;
+            document.getElementById('modal-description').textContent = request.description || 'Без описания';
             document.getElementById('modal-created-date').textContent = new Date(request.created_at).toLocaleDateString('ru-RU');
 
             // Загрузка товаров заявки
             let productsHtml = '';
-            if (request.products && request.products.length > 0) {
-                request.products.forEach(product => {
-                    productsHtml += `
-                        <div class="product-item">
-                            <div>${product.name}</div>
-                            <div>Кол-во: ${product.quantity || 1}</div>
-                        </div>
-                    `;
-                });
+            if (request.product_id) {
+                // Если есть товар, показываем его
+                productsHtml = `
+                    <div class="product-item">
+                        <div>Товар ID: ${request.product_id}</div>
+                        <div>${request.qr_content || 'Информация о товаре отсутствует'}</div>
+                    </div>
+                `;
             } else {
-                productsHtml = '<p>В этой заявке нет товаров</p>';
+                productsHtml = '<p>Общая заявка (без конкретного товара)</p>';
             }
 
-            document.getElementById('modal-products-list').innerHTML = `<h4>Товары в заявке:</h4>${productsHtml}`;
+            document.getElementById('modal-products-list').innerHTML = `<h4>Информация о заявке:</h4>${productsHtml}`;
             document.getElementById('request-details-modal').style.display = 'flex';
         }
 
@@ -1083,6 +1661,11 @@
             };
             return priorityMap[priority] || priority;
         }
+
+        // При закрытии страницы останавливаем опрос
+        window.addEventListener('beforeunload', function() {
+            stopMessagePolling();
+        });
     </script>
 </body>
 </html>

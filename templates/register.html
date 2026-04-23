@@ -8,65 +8,74 @@
     <script src="{{ url_for('static', filename='js/register.js') }}"></script>
     <title>Регистрация</title>
     <style>
-        /* Стили для select, идентичные предыдущему примеру */
-        .input-field {
-            position: relative;
-            margin-bottom: 30px;
-        }
-
-        .input-field select {
-            width: 100%;
-            padding: 10px 0;
-            border: none;
-            border-bottom: 1px solid #ccc;
-            background: transparent;
-            color: inherit;
-            outline: none;
-            font-size: 16px;
-            appearance: none; /* Убираем стандартный вид */
-        }
-
-        .input-field select:focus {
-            border-bottom: 1.5px solid #007bff; /* Цвет при фокусе */
-        }
-
-        .input-field select option {
-            color: #333; /* Цвет текста в выпадающем списке */
-        }
-
-        .input-field::after {
-            content: "▼";
+        .back-arrow {
             position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            pointer-events: none;
-            color: #999;
-            font-size: 12px;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .back-arrow:hover {
+            background: #f0f0f0;
+            color: #333;
+            transform: translateX(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .back-arrow svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.5;
         }
 
-        .input-field label {
-            position: absolute;
-            left: 0;
-            top: 10px;
-            pointer-events: none;
-            transition: 0.3s;
+        /* Стиль для ссылки "Есть аккаунт?" */
+        .register {
+            text-align: center;
+            margin-top: 20px;
         }
-
-        .input-field select:focus + label,
-        .input-field select:valid + label {
-            top: -20px;
-            font-size: 14px;
-            color: #007bff;
+        .register a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(93, 113, 245, 0.1);
+            color: #5d71f5;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .register a:hover {
+            background: rgba(93, 113, 245, 0.2);
+            border-color: rgba(93, 113, 245, 0.4);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(93, 113, 245, 0.2);
         }
     </style>
 </head>
 <body>
     <div class="wrapper">
-        <form method="POST" onSubmit="return checkPassword(this)">
+        <a href="{{ url_for('start') }}" class="back-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M19 12H6M12 5l-7 7 7 7"/>
+            </svg>
+        </a>
+        <form method="POST" onsubmit="return checkPassword(this)">
             <h2>Регистрация</h2>
 
-            <!-- Поле для домена компании -->
             <div class="input-field">
                 <input type="text" name="domain" required pattern="[a-zA-Z0-9-]+"
                        title="Только латинские буквы, цифры и дефисы">
@@ -86,16 +95,7 @@
                 <label>Повторите пароль</label>
             </div>
 
-            <!-- Выбор роли (с идентичным дизайном) -->
-            <div class="input-field">
-                <select name="role" required>
-                    <option value="" disabled selected></option>
-                    <option value="worker">Рабочий</option>
-                    <option value="owner">Владелец</option>
-                    <option value="customer">Заказчик</option>
-                </select>
-                <label>Выберите роль</label>
-            </div>
+            <input type="hidden" name="role" value="owner">
 
             <button type="submit">Зарегистрироваться</button>
         </form>
