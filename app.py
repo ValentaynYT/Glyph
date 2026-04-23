@@ -844,7 +844,7 @@ def api_owner_requests():
             req = row[0]
             customer = row[1]
             product = row[2]
-            
+
             # Форматируем статус
             status_map = {
                 'new': 'Новая',
@@ -852,7 +852,7 @@ def api_owner_requests():
                 'completed': 'Одобрена',
                 'cancelled': 'Отклонена'
             }
-            
+
             # Форматируем тип заявки
             type_map = {
                 'order': 'Заказ товаров',
@@ -860,7 +860,7 @@ def api_owner_requests():
                 'issue': 'Проблема с товаром',
                 'other': 'Другое'
             }
-            
+
             # Форматируем приоритет
             priority_map = {
                 'low': 'Низкий',
@@ -868,7 +868,7 @@ def api_owner_requests():
                 'high': 'Высокий',
                 'urgent': 'Срочный'
             }
-            
+
             requests.append({
                 'id': req.id,
                 'email': customer.email if customer else 'Неизвестный',
@@ -885,7 +885,7 @@ def api_owner_requests():
             })
 
         return jsonify(requests)
-    
+
     except Exception as e:
         print(f"Ошибка при получении заявок: {str(e)}")
         return jsonify({"error": f"Ошибка сервера: {str(e)}"}), 500
@@ -1318,4 +1318,4 @@ def get_products():
 if __name__ == "__main__":
     with app.app_context():
         init_database()
-    app.run(debug=True, host='0.0.0.0', port=5000) 
+    app.run(debug=True, host='0.0.0.0', port=5000)
