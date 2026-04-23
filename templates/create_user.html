@@ -53,7 +53,12 @@
             text-align: left;
             border: 1px solid transparent;
             background: rgba(255, 255, 255, 0.05);
-            transition: opacity 0.3s ease;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .flash-message.fade-out {
+            opacity: 0;
+            transform: translateY(-10px);
         }
 
         .flash-success {
@@ -282,12 +287,13 @@
 </head>
 <body>
     <div class="create-user-container">
-        <h1 class="page-title">👤 Создание аккаунта</h1>
+        <h1 class="page-title"> Создание аккаунта</h1>
 
-        <!-- Flash-сообщения -->
+        <!-- Flash-сообщения (ТОЛЬКО о создании пользователя) -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
+                    {% if 'Пользователь создан' in message or 'пользователь создан' in message %}
                     <div class="flash-message flash-{{ category }}" id="flash-message">
                         {% if category == 'success' %}
                             <div style="margin-bottom: 10px;">
@@ -295,16 +301,16 @@
                             </div>
                             <div class="user-data">
                                 {% for line in message.split('<br>') %}
-                                    {% if line %}
+                                    {% if line and ('Email:' in line or 'Пароль:' in line or 'Домен' in line) %}
                                         <div class="user-data-item">
                                             <span class="data-label">
                                                 {% if 'Email:' in line %}Email:
                                                 {% elif 'Пароль:' in line %}Пароль:
-                                                {% elif 'Домен компании' in line %}Домен:
-                                                {% else %}{% endif %}
+                                                {% elif 'Домен' in line %}Домен:
+                                                {% endif %}
                                             </span>
                                             <span class="data-value">
-                                                {{ line | replace('<strong>', '') | replace('</strong>', '') | replace('Email:', '') | replace('Пароль:', '') | replace('Домен компании для входа:', '') | trim }}
+                                                {{ line | replace('<strong>', '') | replace('</strong>', '') | replace('Email:', '') | replace('Пароль:', '') | replace('Домен компании для входа:', '') | replace('Домен компании для входа', '') | trim }}
                                             </span>
                                         </div>
                                     {% endif %}
@@ -317,6 +323,7 @@
                             {{ message | safe }}
                         {% endif %}
                     </div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -360,35 +367,66 @@
         document.addEventListener('DOMContentLoaded', function() {
             const flashMessage = document.getElementById('flash-message');
             const backLink = document.querySelector('.back-link');
-            let clearFlashTimeout = null;
+            let fadeOutTimer = null;
 
-            // Функция для очистки flash-сообщения
-            function clearFlashMessage() {
-                if (flashMessage) {
-                    flashMessage.style.opacity = '0';
+            // Функция для плавного удаления flash-сообщения
+            function fadeOutFlashMessage() {
+                if (flashMessage && flashMessage.parentNode) {
+                    flashMessage.classList.add('fade-out');
+                    // Удаляем элемент после завершения анимации
                     setTimeout(() => {
-                        flashMessage.remove();
-                    }, 300); // плавное исчезновение
-                }
-                if (clearFlashTimeout) {
-                    clearTimeout(clearFlashTimeout);
+                        if (flashMessage.parentNode) {
+                            flashMessage.remove();
+                        }
+                    }, 500);
                 }
             }
 
-            // Автоочистка через 10 секунд
+            // Функция для сброса таймера
+            function resetFlashTimer() {
+                if (fadeOutTimer) {
+                    clearTimeout(fadeOutTimer);
+                }
+                // Запускаем таймер на 7 секунд
+                fadeOutTimer = setTimeout(fadeOutFlashMessage, 7000);
+            }
+
+            // Запускаем таймер при загрузке страницы
             if (flashMessage) {
-                clearFlashTimeout = setTimeout(clearFlashMessage, 8000); // 10 секунд
+                resetFlashTimer();
+
+                // Сбрасываем таймер при наведении на сообщение
+                flashMessage.addEventListener('mouseenter', function() {
+                    if (fadeOutTimer) {
+                        clearTimeout(fadeOutTimer);
+                    }
+                    flashMessage.classList.remove('fade-out');
+                });
+
+                // Перезапускаем таймер при уходе мыши с сообщения
+                flashMessage.addEventListener('mouseleave', function() {
+                    resetFlashTimer();
+                });
             }
 
-            // Очистка при клике на "Вернуться"
+            // Очистка flash-сообщения при переходе по ссылке "Вернуться"
             if (backLink) {
-                backLink.addEventListener('click', clearFlashMessage);
+                backLink.addEventListener('click', function(e) {
+                    if (fadeOutTimer) {
+                        clearTimeout(fadeOutTimer);
+                    }
+                    if (flashMessage) {
+                        flashMessage.style.opacity = '0';
+                        setTimeout(() => {
+                            if (flashMessage.parentNode) {
+                                flashMessage.remove();
+                            }
+                        }, 300);
+                    }
+                });
             }
 
-            // Очистка при уходе со страницы (на всякий случай)
-            window.addEventListener('beforeunload', clearFlashMessage);
-
-            // --- Логика копирования (оставлена без изменений) ---
+            // --- Логика копирования ---
             const copyBtn = document.getElementById('copy-btn');
             if (copyBtn) {
                 copyBtn.addEventListener('click', async function() {
@@ -405,12 +443,6 @@
                                 copyText += `${label} ${value}\n`;
                             }
                         });
-
-                        if (!copyText.trim()) {
-                            const text = flashMessage.textContent;
-                            const lines = text.split('\n').filter(line => line.trim());
-                            copyText = lines.join('\n');
-                        }
 
                         if (!copyText.trim()) {
                             throw new Error('Не удалось извлечь данные для копирования');

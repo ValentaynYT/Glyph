@@ -1081,7 +1081,6 @@ function filterAndDisplayProducts() {
     let filteredProducts = groupedProducts.filter(group => {
         const matchesSearch = group.qr_content.toLowerCase().includes(currentFilter);
         const matchesShelf = !currentShelfFilter ||
-            (currentShelfFilter === 'no-shelf' && !group.shelf) ||
             (group.shelf && group.shelf.id == currentShelfFilter);
 
         return matchesSearch && matchesShelf;
@@ -1236,17 +1235,18 @@ function loadShelvesFilter() {
     .then(response => response.json())
     .then(shelves => {
         const filterSelect = document.getElementById('shelf-filter');
+        // Очищаем текущие опции (кроме первой "Все полки")
+        while (filterSelect.options.length > 1) {
+            filterSelect.remove(1);
+        }
+
+        // Добавляем только реальные полки
         shelves.forEach(shelf => {
             const option = document.createElement('option');
             option.value = shelf.id;
             option.textContent = shelf.name;
             filterSelect.appendChild(option);
         });
-
-        const noShelfOption = document.createElement('option');
-        noShelfOption.value = 'no-shelf';
-        noShelfOption.textContent = 'Без полки';
-        filterSelect.appendChild(noShelfOption);
 
         filterSelect.addEventListener('change', function() {
             currentShelfFilter = this.value;
