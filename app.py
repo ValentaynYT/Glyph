@@ -16,14 +16,12 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
 
-# Настройка логирования
 logging.basicConfig(level=logging.DEBUG)
 
-# Инициализация базы данных
 db = SQLAlchemy(app)
 
 
-# Модели
+
 class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     domain = db.Column(db.String(120), unique=True, nullable=False)
@@ -103,7 +101,6 @@ class ChatMessage(db.Model):
         return f'<ChatMessage {self.id}>'
 
 
-# Создание папки для загрузок
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
@@ -133,7 +130,6 @@ def decode_qr_code(image):
         return None
 
 
-# === ЧАТ ===
 @app.route('/send_message', methods=['POST'])
 def send_message():
     if 'user_id' not in session or 'company_id' not in session:
@@ -172,16 +168,13 @@ def get_messages():
 
     last_id = request.args.get('last_id', 0, type=int)
 
-    # Базовый запрос с фильтрацией по компании
     messages_query = db.session.query(ChatMessage, User). \
         join(User, ChatMessage.sender_id == User.id). \
         filter(ChatMessage.company_id == session['company_id'])
 
-    # Если передан last_id, возвращаем только сообщения с ID больше него
     if last_id > 0:
         messages_query = messages_query.filter(ChatMessage.id > last_id)
 
-    # Сортируем по времени и получаем
     messages_data = messages_query.order_by(ChatMessage.timestamp.asc()).all()
 
     messages_list = [{
@@ -217,7 +210,6 @@ def get_unread_count():
 
     last_id = request.args.get('last_id', 0, type=int)
 
-    # Считаем количество новых сообщений с ID больше last_id
     count = ChatMessage.query.filter(
         ChatMessage.company_id == session['company_id'],
         ChatMessage.id > last_id
@@ -229,7 +221,6 @@ def get_unread_count():
     })
 
 
-# === Основные маршруты ===
 @app.route("/")
 def index():
     return render_template("start.html")
@@ -738,7 +729,6 @@ def owner_requests():
         flash('У вас нет доступа к этой странице.', 'danger')
         return redirect(url_for('login'))
 
-    # Проверяем, запрошен ли JSON формат
     if request.args.get('format') == 'json':
         requests_data = db.session.query(Request, User, Product). \
             join(User, Request.customer_id == User.id). \
@@ -786,7 +776,6 @@ def owner_requests():
             })
         return jsonify(requests)
 
-    # Иначе рендерим HTML страницу
     requests_data = db.session.query(Request, User, Product). \
         join(User, Request.customer_id == User.id). \
         outerjoin(Product, Request.product_id == Product.id). \
@@ -819,7 +808,6 @@ def owner_requests():
     return render_template('owner_requests.html', requests=requests)
 
 
-# Новый API endpoint для владельца
 @app.route('/api/owner_requests')
 def api_owner_requests():
     """API для получения заявок для владельца компании"""
@@ -831,7 +819,6 @@ def api_owner_requests():
         return jsonify({"error": "Только владелец может просматривать заявки"}), 403
 
     try:
-        # Получаем все заявки для текущей компании
         requests_data = db.session.query(Request, User, Product). \
             outerjoin(User, Request.customer_id == User.id). \
             outerjoin(Product, Request.product_id == Product.id). \
@@ -845,7 +832,6 @@ def api_owner_requests():
             customer = row[1]
             product = row[2]
 
-            # Форматируем статус
             status_map = {
                 'new': 'Новая',
                 'in-progress': 'В работе',
@@ -853,7 +839,6 @@ def api_owner_requests():
                 'cancelled': 'Отклонена'
             }
 
-            # Форматируем тип заявки
             type_map = {
                 'order': 'Заказ товаров',
                 'return': 'Возврат',
@@ -861,7 +846,6 @@ def api_owner_requests():
                 'other': 'Другое'
             }
 
-            # Форматируем приоритет
             priority_map = {
                 'low': 'Низкий',
                 'medium': 'Средний',
@@ -1057,7 +1041,6 @@ def customer_requests():
             Request.company_id == session['company_id']
         ).all()
 
-    # Проверяем, запрошен ли JSON формат
     if request.args.get('format') == 'json':
         requests = []
         for row in requests_data:
@@ -1075,7 +1058,6 @@ def customer_requests():
             })
         return jsonify(requests)
 
-    # Иначе рендерим HTML страницу
     requests = []
     for row in requests_data:
         req = row[0]
