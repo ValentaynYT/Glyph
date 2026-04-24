@@ -251,7 +251,6 @@
             }
         }
 
-        /* Стили для пользовательских данных в flash-сообщении */
         .user-data {
             background: rgba(255, 255, 255, 0.05);
             padding: 15px;
@@ -289,7 +288,6 @@
     <div class="create-user-container">
         <h1 class="page-title"> Создание аккаунта</h1>
 
-        <!-- Flash-сообщения (ТОЛЬКО о создании пользователя) -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -317,7 +315,7 @@
                                 {% endfor %}
                             </div>
                             <div style="margin-top: 15px; font-size: 13px; color: rgba(255,255,255,0.7);">
-                                🔒 Обязательно сохраните эти данные, они больше не будут показаны!
+                                 Обязательно сохраните эти данные, они больше не будут показаны!
                             </div>
                         {% else %}
                             {{ message | safe }}
@@ -329,7 +327,7 @@
         {% endwith %}
 
         <div class="info-box">
-            <strong>🔐 Система автоматической генерации</strong><br><br>
+            <strong> Система автоматической генерации</strong><br><br>
             • Для <strong>Рабочего</strong>: <code>workowner@XXXXXXX</code><br>
             • Для <strong>Заказчика</strong>: <code>customer@XXXXXXX</code><br><br>
             где <code>XXXXXXX</code> — 7 случайных цифр.<br>
@@ -341,20 +339,19 @@
                 <label for="role-select">Выберите роль пользователя:</label>
                 <select id="role-select" name="role" class="form-select" required>
                     <option value="" disabled selected>-- Выберите роль --</option>
-                    <option value="worker">👷 Рабочий (может добавлять товары и полки)</option>
-                    <option value="customer">🛒 Заказчик (может просматривать товары и создавать заявки)</option>
+                    <option value="worker"> Рабочий</option>
+                    <option value="customer"> Заказчик </option>
                 </select>
             </div>
 
             <button type="submit" class="btn">
-                <span class="icon">⚡</span> Создать аккаунт
+                <span class="icon"></span> Создать аккаунт
             </button>
         </form>
 
-        <!-- Кнопка копирования данных -->
         {% if get_flashed_messages(category_filter=["success"]) %}
         <button id="copy-btn" class="btn copy-btn">
-            <span class="icon">📋</span> Копировать данные пользователя
+            <span class="icon"></span> Копировать данные пользователя
         </button>
         {% endif %}
 
@@ -369,11 +366,9 @@
             const backLink = document.querySelector('.back-link');
             let fadeOutTimer = null;
 
-            // Функция для плавного удаления flash-сообщения
             function fadeOutFlashMessage() {
                 if (flashMessage && flashMessage.parentNode) {
                     flashMessage.classList.add('fade-out');
-                    // Удаляем элемент после завершения анимации
                     setTimeout(() => {
                         if (flashMessage.parentNode) {
                             flashMessage.remove();
@@ -382,20 +377,16 @@
                 }
             }
 
-            // Функция для сброса таймера
             function resetFlashTimer() {
                 if (fadeOutTimer) {
                     clearTimeout(fadeOutTimer);
                 }
-                // Запускаем таймер на 7 секунд
                 fadeOutTimer = setTimeout(fadeOutFlashMessage, 7000);
             }
 
-            // Запускаем таймер при загрузке страницы
             if (flashMessage) {
                 resetFlashTimer();
 
-                // Сбрасываем таймер при наведении на сообщение
                 flashMessage.addEventListener('mouseenter', function() {
                     if (fadeOutTimer) {
                         clearTimeout(fadeOutTimer);
@@ -403,13 +394,11 @@
                     flashMessage.classList.remove('fade-out');
                 });
 
-                // Перезапускаем таймер при уходе мыши с сообщения
                 flashMessage.addEventListener('mouseleave', function() {
                     resetFlashTimer();
                 });
             }
 
-            // Очистка flash-сообщения при переходе по ссылке "Вернуться"
             if (backLink) {
                 backLink.addEventListener('click', function(e) {
                     if (fadeOutTimer) {
@@ -426,7 +415,6 @@
                 });
             }
 
-            // --- Логика копирования ---
             const copyBtn = document.getElementById('copy-btn');
             if (copyBtn) {
                 copyBtn.addEventListener('click', async function() {
@@ -483,7 +471,6 @@
                 });
             }
 
-            // Анимация появления контейнера
             const container = document.querySelector('.create-user-container');
             if (container) {
                 container.style.opacity = '0';

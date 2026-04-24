@@ -283,7 +283,6 @@
             background: rgba(93, 113, 245, 0.6);
         }
 
-        /* ===== ТЕХПОДДЕРЖКА ===== */
         .support-container {
             padding: 5px;
         }
@@ -376,7 +375,6 @@
             font-style: italic;
         }
 
-        /* Стили для уведомления о копировании */
         .copy-notification {
             position: fixed;
             top: 50%;
@@ -413,7 +411,6 @@
             background: rgba(255, 69, 58, 0.6);
         }
 
-        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
         .notification-badge {
             background: #ff4757;
             color: white;
@@ -669,10 +666,8 @@
     </style>
 </head>
 <body>
-    <!-- Уведомление о копировании -->
     <div id="copyNotification" class="copy-notification">Email скопирован!</div>
     
-    <!-- Верхнее меню с навигацией -->
     <div class="top-menu">
         <a href="{{ url_for('customer_products') }}">
              Товары в наличии
@@ -779,13 +774,13 @@
     <div class="dashboard-container">
         <!-- Приветствие -->
         <div class="welcome-section">
-            <h1>Добро пожаловать! 👋</h1>
+            <h1>Добро пожаловать! </h1>
             <p id="current-date">Сегодня: Загрузка даты...</p>
         </div>
 
         <!-- Общая статистика -->
         <div class="dashboard-section">
-            <h2>📊 Общая статистика</h2>
+            <h2> Общая статистика</h2>
             <div class="stats-grid">
                 <div class="stat-item">
                     <div class="stat-number">{{ total_products }}</div>
@@ -808,7 +803,7 @@
 
         <!-- Товары -->
         <div class="dashboard-section">
-            <h2>📦 Товары в наличии</h2>
+            <h2> Товары в наличии</h2>
             <p>Доступно для заказа: <strong>{{ total_products }}</strong> товаров</p>
             <p>Новых поступлений: <strong id="new-products">0</strong></p>
 
@@ -824,7 +819,7 @@
 
         <!-- Поиск -->
         <div class="dashboard-section">
-            <h2>🔍 Поиск товаров</h2>
+            <h2> Поиск товаров</h2>
             <p>Используйте систему поиска для быстрого нахождения нужных товаров</p>
 
             <!-- Быстрая форма поиска -->
@@ -840,30 +835,28 @@
 
         <!-- Быстрые действия -->
         <div class="dashboard-section">
-            <h2>⚡ Быстрые действия</h2>
+            <h2> Быстрые действия</h2>
             <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                 <button class="action-button secondary" onclick="window.location.href='{{ url_for('customer_products') }}'">
-                    📦 Все товары
+                     Все товары
                 </button>
                 <button class="action-button secondary" onclick="window.location.href='{{ url_for('customer_requests') }}'">
-                    📋 Мои заявки
+                     Мои заявки
                 </button>
                 <button class="action-button secondary" onclick="window.location.href='{{ url_for('customer_search') }}'">
-                    🔍 Поиск
+                     Поиск
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ ЧАТА =====
         let lastMessageId = 0;
         let unreadMessages = 0;
         let chatInitialized = false;
         let messagePollingInterval = null;
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Инициализация даты
             const now = new Date();
             const options = {
                 year: 'numeric',
@@ -874,7 +867,6 @@
             document.getElementById('current-date').textContent =
                 'Сегодня: ' + now.toLocaleDateString('ru-RU', options);
 
-            // Управление модальным окном профиля
             const profileButton = document.getElementById('profile-button');
             const profileModal = document.getElementById('profile-modal');
 
@@ -889,7 +881,6 @@
                 }
             });
 
-            // Инициализация вкладок профиля
             const profileTabs = document.querySelectorAll('.profile-tab');
             if (profileTabs) {
                 profileTabs.forEach(tab => {
@@ -910,7 +901,6 @@
                 });
             }
 
-            // Функция для показа уведомления
             function showCopyNotification() {
                 const notification = document.getElementById('copyNotification');
                 notification.classList.add('show');
@@ -919,25 +909,21 @@
                 }, 2000);
             }
 
-            // Обработчик для кнопки копирования email
             const copyEmailButton = document.getElementById('copy-email-button');
             if (copyEmailButton) {
                 copyEmailButton.addEventListener('click', async function() {
                     const email = 'valentin.borisov.ru@gmail.com';
                     
                     try {
-                        // Пробуем использовать современный Clipboard API
                         await navigator.clipboard.writeText(email);
                         showCopyNotification();
                         
-                        // Меняем текст кнопки временно
                         const originalText = this.innerHTML;
                         this.innerHTML = '<i class="fas fa-check" style="margin-right: 8px;"></i>Email скопирован!';
                         this.style.background = 'rgba(76, 175, 80, 0.3)';
                         this.style.color = '#4CAF50';
                         this.style.borderColor = '#4CAF50';
                         
-                        // Возвращаем исходный текст через 2 секунды
                         setTimeout(() => {
                             this.innerHTML = originalText;
                             this.style.background = 'rgba(93, 113, 245, 0.2)';
@@ -946,7 +932,6 @@
                         }, 2000);
                         
                     } catch (err) {
-                        // Fallback для старых браузеров
                         const textArea = document.createElement('textarea');
                         textArea.value = email;
                         textArea.style.position = 'fixed';
@@ -968,7 +953,6 @@
                 });
             }
 
-            // Обработчик для кнопки Telegram
             const telegramButton = document.getElementById('telegram-button');
             if (telegramButton) {
                 telegramButton.addEventListener('click', function(event) {
@@ -976,18 +960,15 @@
                 });
             }
 
-            // Загрузка данных с сервера
             loadDashboardData();
         });
 
-        // ===== ИНИЦИАЛИЗАЦИЯ ЧАТА =====
         function initChat() {
             if (chatInitialized) return;
             chatInitialized = true;
 
             loadAllMessages();
 
-            // Обработчик отправки сообщения
             document.getElementById('chat-send')?.addEventListener('click', () => {
                 const input = document.getElementById('chat-input');
                 if (input) {
@@ -999,18 +980,15 @@
                 }
             });
 
-            // Отправка сообщения по Enter
             document.getElementById('chat-input')?.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     document.getElementById('chat-send')?.click();
                 }
             });
 
-            // Запускаем опрос новых сообщений
             startMessagePolling();
         }
 
-        // ===== ФУНКЦИИ ЧАТА =====
         function loadAllMessages() {
             fetch('/get_messages')
                 .then(response => response.json())
@@ -1038,12 +1016,10 @@
                         const messagesContainer = document.getElementById('chat-messages');
                         if (messagesContainer) {
                             data.messages.forEach(msg => {
-                                // Проверяем, нет ли уже этого сообщения
                                 if (msg.id > lastMessageId) {
                                     addMessageToChat(msg);
                                     lastMessageId = msg.id;
 
-                                    // Если чат не активен, увеличиваем счетчик непрочитанных
                                     const chatTab = document.querySelector('.profile-tab[data-tab="chat"]');
                                     if (chatTab && !chatTab.classList.contains('active')) {
                                         unreadMessages++;
@@ -1062,7 +1038,6 @@
             const messagesContainer = document.getElementById('chat-messages');
             if (!messagesContainer) return;
 
-            // Проверяем, нет ли уже такого сообщения
             const existingMessage = messagesContainer.querySelector(`[data-message-id="${msg.id}"]`);
             if (existingMessage) return;
 
@@ -1070,7 +1045,6 @@
             messageElement.className = 'chat-message';
             messageElement.dataset.messageId = msg.id;
 
-            // Форматируем время
             const timestamp = new Date(msg.timestamp);
             const timeString = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
@@ -1092,7 +1066,6 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.data) {
-                    // Добавляем отправленное сообщение сразу в чат
                     addMessageToChat(data.data);
                     lastMessageId = Math.max(lastMessageId, data.data.id);
 
@@ -1129,9 +1102,7 @@
             });
         }
 
-        // ===== ФУНКЦИИ ДЛЯ ДАШБОРДА =====
         function loadDashboardData() {
-            // Загрузка товаров
             fetch('/get_products')
                 .then(response => {
                     if (!response.ok) {
@@ -1149,15 +1120,12 @@
                 });
         }
 
-        // Обновление статистики товаров
         function updateProductsStats(products) {
             const totalProducts = products.length;
             const productsWithoutShelf = products.filter(p => !p.shelf).length;
 
-            // Подсчет уникальных товаров (по содержимому QR-кода)
             const uniqueProducts = [...new Set(products.map(p => p.qr_content))].length;
 
-            // Новые товары (добавлены за последние 7 дней)
             const newProducts = products.filter(p => {
                 if (!p.created_at) return false;
                 const addedDate = new Date(p.created_at);
@@ -1170,16 +1138,14 @@
             document.getElementById('unique-products').textContent = uniqueProducts;
         }
 
-        // Отображение последних добавленных товаров
         function displayRecentProducts(products) {
             const container = document.getElementById('recent-products');
 
-            // Сортируем товары по дате добавления (последние сначала)
             const sortedProducts = [...products].sort((a, b) => {
                 const dateA = new Date(a.created_at || 0);
                 const dateB = new Date(b.created_at || 0);
                 return dateB - dateA;
-            }).slice(0, 5); // Берем только 5 последних товаров
+            }).slice(0, 5);
 
             if (sortedProducts.length === 0) {
                 container.innerHTML = '<p>Товаров пока нет</p>';
@@ -1200,7 +1166,7 @@
                             }
                         </td>
                         <td>
-                            <button class="action-button" onclick="createRequest(${product.id})">📝 Заявка</button>
+                            <button class="action-button" onclick="createRequest(${product.id})"> Заявка</button>
                         </td>
                     </tr>
                 `;
@@ -1210,7 +1176,6 @@
             container.innerHTML = html;
         }
 
-        // Функция создания заявки
         function createRequest(productId) {
             if (confirm('Вы уверены, что хотите подать заявку на этот товар?')) {
                 fetch('/create_request/' + productId, {
@@ -1230,7 +1195,6 @@
                 .then(data => {
                     if (data.success) {
                         alert('Заявка успешно создана!');
-                        // Обновляем счетчик заявок
                         const currentCount = parseInt(document.getElementById('user_requests_count').textContent);
                         document.getElementById('user_requests_count').textContent = currentCount + 1;
                     } else {
@@ -1244,7 +1208,6 @@
             }
         }
 
-        // При закрытии страницы останавливаем опрос
         window.addEventListener('beforeunload', function() {
             stopMessagePolling();
         });

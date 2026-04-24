@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Общий список товаров</title>
     <style>
-        /* ===== ОСНОВНЫЕ СТИЛИ ===== */
         body {
             margin: 0;
             background: rgb(39,40,43);
@@ -147,7 +146,6 @@
             background: rgba(93, 113, 245, 0.6);
         }
 
-        /* ===== ПРОФИЛЬ И ЧАТ ===== */
         .profile-button {
             position: absolute;
             right: 50px;
@@ -412,7 +410,6 @@
             background: rgba(255, 69, 58, 0.6);
         }
 
-        /* Стили для уведомления о копировании */
         .copy-notification {
             position: fixed;
             top: 50%;
@@ -446,7 +443,6 @@
             font-style: italic;
         }
 
-        /* ===== ПОИСК И ФИЛЬТРЫ ===== */
         .controls-panel {
             display: flex;
             justify-content: center;
@@ -519,7 +515,6 @@
             background: rgba(93, 113, 245, 0.8);
         }
 
-        /* ===== ПАГИНАЦИЯ ===== */
         .pagination {
             display: flex;
             justify-content: center;
@@ -545,7 +540,6 @@
             background: rgba(93, 113, 245, 0.6);
         }
 
-        /* ===== СТАТИСТИКА ===== */
         .stats-panel {
             display: flex;
             gap: 20px;
@@ -573,7 +567,6 @@
             background: rgba(0, 255, 136, 0.1);
         }
 
-        /* ===== ГРУППИРОВКА ===== */
         .grouped-row {
             background: rgba(93, 113, 245, 0.1) !important;
             font-weight: bold;
@@ -604,7 +597,6 @@
             padding-bottom: 8px;
         }
 
-        /* ===== МОДАЛЬНОЕ ОКНО ===== */
         .edit-modal {
             display: none;
             position: fixed;
@@ -711,7 +703,6 @@
     </style>
 </head>
 <body>
-    <!-- Уведомление о копировании -->
     <div id="copyNotification" class="copy-notification">Email скопирован!</div>
     
     <div class="top-menu">
@@ -758,7 +749,6 @@
 
                 <div class="profile-tab-content" data-tab="chat">
                     <div class="chat-container" id="chat-messages">
-                        <!-- Сообщения будут здесь -->
                     </div>
                     <div class="chat-input-container">
                         <input type="text" class="chat-input" id="chat-input" placeholder="Введите сообщение...">
@@ -833,11 +823,9 @@
         </div>
 
         <div id="products-table-container">
-            <!-- Таблица будет загружена через JavaScript -->
         </div>
 
         <div class="pagination" id="pagination">
-            <!-- Пагинация будет создана через JavaScript -->
         </div>
     </div>
 
@@ -865,13 +853,11 @@
     </div>
 
     <script>
-// ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ ЧАТА =====
 let lastMessageId = 0;
 let unreadMessages = 0;
 let chatInitialized = false;
 let messagePollingInterval = null;
 
-// ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ ТОВАРОВ =====
 let allProducts = [];
 let groupedProducts = [];
 let currentPage = 1;
@@ -880,7 +866,6 @@ let isGrouped = true;
 let currentFilter = '';
 let currentShelfFilter = '';
 
-// ===== ИНИЦИАЛИЗАЦИЯ =====
 document.addEventListener('DOMContentLoaded', function() {
     initializePage();
     setupEventListeners();
@@ -918,7 +903,6 @@ function initializePage() {
         window.location.href = "{{ url_for('all_shelves') }}";
     });
 
-    // Инициализация вкладок профиля
     const profileTabs = document.querySelectorAll('.profile-tab');
     if (profileTabs) {
         profileTabs.forEach(tab => {
@@ -929,7 +913,6 @@ function initializePage() {
                 this.classList.add('active');
                 document.querySelector(`.profile-tab-content[data-tab="${this.dataset.tab}"]`).classList.add('active');
 
-                // Если открыли вкладку чата, инициализируем его
                 if (this.dataset.tab === 'chat') {
                     if (!chatInitialized) {
                         chatInitialized = true;
@@ -944,8 +927,6 @@ function initializePage() {
     }
 }
 
-// ===== ТЕХПОДДЕРЖКА =====
-// Функция для показа уведомления о копировании
 function showCopyNotification() {
     const notification = document.getElementById('copyNotification');
     if (!notification) return;
@@ -956,7 +937,6 @@ function showCopyNotification() {
     }, 2000);
 }
 
-// Обработчик для кнопки копирования email
 document.addEventListener('DOMContentLoaded', function() {
     const copyEmailButton = document.getElementById('copy-email-button');
     if (copyEmailButton) {
@@ -964,18 +944,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = 'valentin.borisov.ru@gmail.com';
             
             try {
-                // Пробуем использовать современный Clipboard API
                 await navigator.clipboard.writeText(email);
                 showCopyNotification();
                 
-                // Меняем текст кнопки временно
                 const originalText = this.innerHTML;
                 this.innerHTML = '<i class="fas fa-check" style="margin-right: 8px;"></i>Email скопирован!';
                 this.style.background = 'rgba(76, 175, 80, 0.3)';
                 this.style.color = '#4CAF50';
                 this.style.borderColor = '#4CAF50';
                 
-                // Возвращаем исходный текст через 2 секунды
                 setTimeout(() => {
                     this.innerHTML = originalText;
                     this.style.background = 'rgba(93, 113, 245, 0.2)';
@@ -984,7 +961,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 2000);
                 
             } catch (err) {
-                // Fallback для старых браузеров
                 const textArea = document.createElement('textarea');
                 textArea.value = email;
                 textArea.style.position = 'fixed';
@@ -1006,7 +982,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Обработчик для кнопки Telegram
     const telegramButton = document.getElementById('telegram-button');
     if (telegramButton) {
         telegramButton.addEventListener('click', function(event) {
@@ -1032,7 +1007,6 @@ function setupEventListeners() {
     loadShelvesFilter();
 }
 
-// ===== ЗАГРУЗКА ДАННЫХ =====
 function loadProducts() {
     allProducts = [
         {% for product in products %}
@@ -1076,7 +1050,6 @@ function updateStatistics() {
     document.getElementById('unique-count').textContent = groupedProducts.length;
 }
 
-// ===== ФИЛЬТРАЦИЯ И ОТОБРАЖЕНИЕ =====
 function filterAndDisplayProducts() {
     let filteredProducts = groupedProducts.filter(group => {
         const matchesSearch = group.qr_content.toLowerCase().includes(currentFilter);
@@ -1192,7 +1165,6 @@ function displayProducts(products) {
     container.innerHTML = tableHTML;
 }
 
-// ===== ПАГИНАЦИЯ =====
 function updatePagination(totalItems) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const pagination = document.getElementById('pagination');
@@ -1229,18 +1201,15 @@ function changePage(page) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ===== ФИЛЬТРЫ =====
 function loadShelvesFilter() {
     fetch("/get_shelves")
     .then(response => response.json())
     .then(shelves => {
         const filterSelect = document.getElementById('shelf-filter');
-        // Очищаем текущие опции (кроме первой "Все полки")
         while (filterSelect.options.length > 1) {
             filterSelect.remove(1);
         }
 
-        // Добавляем только реальные полки
         shelves.forEach(shelf => {
             const option = document.createElement('option');
             option.value = shelf.id;
@@ -1258,7 +1227,6 @@ function loadShelvesFilter() {
     });
 }
 
-// ===== РАБОТА С ТОВАРАМИ =====
 function toggleGroup(button, qrContent) {
     const safeId = qrContent.replace(/[^a-zA-Z0-9]/g, '-');
     const groupRow = document.getElementById(`group-${safeId}`);
@@ -1389,9 +1357,7 @@ function loadShelves(selectElement, selectedShelfId) {
     });
 }
 
-// ===== ИНИЦИАЛИЗАЦИЯ ЧАТА =====
 function initChat() {
-    // Обработчик отправки сообщения
     document.getElementById('chat-send')?.addEventListener('click', () => {
         const input = document.getElementById('chat-input');
         if (input) {
@@ -1403,18 +1369,15 @@ function initChat() {
         }
     });
 
-    // Отправка сообщения по Enter
     document.getElementById('chat-input')?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             document.getElementById('chat-send')?.click();
         }
     });
 
-    // Запускаем проверку непрочитанных сообщений
     startUnreadCheck();
 }
 
-// ===== ФУНКЦИИ ЧАТА =====
 function loadAllMessages() {
     fetch('/get_messages')
         .then(response => response.json())
@@ -1442,12 +1405,10 @@ function loadNewMessages() {
                 const messagesContainer = document.getElementById('chat-messages');
                 if (messagesContainer) {
                     data.messages.forEach(msg => {
-                        // Проверяем, нет ли уже этого сообщения
                         if (msg.id > lastMessageId) {
                             addMessageToChat(msg);
                             lastMessageId = msg.id;
 
-                            // Если чат не активен, увеличиваем счетчик непрочитанных
                             const chatTab = document.querySelector('.profile-tab[data-tab="chat"]');
                             if (chatTab && !chatTab.classList.contains('active')) {
                                 unreadMessages++;
@@ -1466,15 +1427,12 @@ function addMessageToChat(msg) {
     const messagesContainer = document.getElementById('chat-messages');
     if (!messagesContainer) return;
 
-    // Проверяем, нет ли уже такого сообщения
     const existingMessage = messagesContainer.querySelector(`[data-message-id="${msg.id}"]`);
     if (existingMessage) return;
 
     const messageElement = document.createElement('div');
     messageElement.className = 'chat-message';
     messageElement.dataset.messageId = msg.id;
-
-    // Форматируем время
     const timestamp = new Date(msg.timestamp);
     const timeString = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
@@ -1496,7 +1454,6 @@ function sendChatMessage(message) {
     .then(response => response.json())
     .then(data => {
         if (data.success && data.data) {
-            // Добавляем отправленное сообщение сразу в чат
             addMessageToChat(data.data);
             lastMessageId = Math.max(lastMessageId, data.data.id);
 
@@ -1519,7 +1476,6 @@ function startMessagePolling() {
 }
 
 function startUnreadCheck() {
-    // Проверяем непрочитанные сообщения каждые 30 секунд
     setInterval(() => {
         if (lastMessageId > 0) {
             fetch(`/get_unread_count?last_id=${lastMessageId}`)
@@ -1553,7 +1509,6 @@ function updateNotifications() {
     });
 }
 
-// При закрытии страницы останавливаем опрос
 window.addEventListener('beforeunload', function() {
     stopMessagePolling();
 });

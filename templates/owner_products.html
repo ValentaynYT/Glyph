@@ -127,7 +127,6 @@
             background: rgba(93, 113, 245, 0.6);
         }
 
-        /* ===== ПРОФИЛЬ И ЧАТ ===== */
         .profile-button {
             position: absolute;
             right: 50px;
@@ -295,7 +294,6 @@
             background: rgba(93, 113, 245, 0.6);
         }
 
-        /* ===== ТЕХПОДДЕРЖКА ===== */
         .support-container {
             padding: 5px;
         }
@@ -388,7 +386,6 @@
             font-style: italic;
         }
 
-        /* Стили для уведомления о копировании */
         .copy-notification {
             position: fixed;
             top: 50%;
@@ -425,7 +422,6 @@
             background: rgba(255, 69, 58, 0.6);
         }
 
-        /* Стили для модального окна редактирования */
         .edit-modal {
             display: none;
             position: fixed;
@@ -508,7 +504,6 @@
             opacity: 0.9;
         }
 
-        /* Новые стили для красивого заголовка */
         .page-title {
             font-size: 2.5em;
             font-weight: bold;
@@ -581,7 +576,6 @@
     </style>
 </head>
 <body>
-    <!-- Уведомление о копировании -->
     <div id="copyNotification" class="copy-notification">Email скопирован!</div>
 
     <div class="top-menu">
@@ -726,7 +720,6 @@
         {% endif %}
     </div>
 
-    <!-- Модальное окно для редактирования товара -->
     <div class="edit-modal" id="edit-modal">
         <div class="edit-modal-content">
             <h3>Редактировать товар</h3>
@@ -751,14 +744,12 @@
     </div>
 
     <script>
-        // ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ ЧАТА =====
         let lastMessageId = 0;
         let unreadMessages = 0;
         let chatInitialized = false;
         let messagePollingInterval = null;
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Управление модальным окном профиля
             const profileButton = document.getElementById('profile-button');
             const profileModal = document.getElementById('profile-modal');
 
@@ -773,7 +764,6 @@
                 }
             });
 
-            // Инициализация вкладок профиля
             const profileTabs = document.querySelectorAll('.profile-tab');
             if (profileTabs) {
                 profileTabs.forEach(tab => {
@@ -784,7 +774,6 @@
                         this.classList.add('active');
                         document.querySelector(`.profile-tab-content[data-tab="${this.dataset.tab}"]`).classList.add('active');
 
-                        // Если открыли вкладку чата, инициализируем его
                         if (this.dataset.tab === 'chat') {
                             initChat();
                             unreadMessages = 0;
@@ -794,7 +783,6 @@
                 });
             }
 
-            // Функция для показа уведомления о копировании
             function showCopyNotification() {
                 const notification = document.getElementById('copyNotification');
                 notification.classList.add('show');
@@ -803,7 +791,6 @@
                 }, 2000);
             }
 
-            // Обработчик для кнопки копирования email
             const copyEmailButton = document.getElementById('copy-email-button');
             if (copyEmailButton) {
                 copyEmailButton.addEventListener('click', async function() {
@@ -849,14 +836,12 @@
             }
         });
 
-        // ===== ИНИЦИАЛИЗАЦИЯ ЧАТА =====
         function initChat() {
             if (chatInitialized) return;
             chatInitialized = true;
 
             loadAllMessages();
 
-            // Обработчик отправки сообщения
             document.getElementById('chat-send')?.addEventListener('click', () => {
                 const input = document.getElementById('chat-input');
                 if (input) {
@@ -868,18 +853,15 @@
                 }
             });
 
-            // Отправка сообщения по Enter
             document.getElementById('chat-input')?.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     document.getElementById('chat-send')?.click();
                 }
             });
 
-            // Запускаем опрос новых сообщений
             startMessagePolling();
         }
 
-        // ===== ФУНКЦИИ ЧАТА =====
         function loadAllMessages() {
             fetch('/get_messages')
                 .then(response => response.json())
@@ -993,7 +975,6 @@
             });
         }
 
-        // ===== ФУНКЦИИ ДЛЯ РЕДАКТИРОВАНИЯ ТОВАРОВ =====
         function loadShelves(selectElement, selectedShelfId) {
             fetch("/get_shelves")
             .then(response => {
@@ -1111,7 +1092,6 @@
             }
         }
 
-        // При закрытии страницы останавливаем опрос
         window.addEventListener('beforeunload', function() {
             stopMessagePolling();
         });

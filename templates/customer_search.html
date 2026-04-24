@@ -164,7 +164,6 @@
             background: rgba(0, 255, 136, 0.6);
         }
 
-        /* ===== ПРОФИЛЬ И ЧАТ ===== */
         .profile-button {
             position: absolute;
             right: 50px;
@@ -334,7 +333,6 @@
             background: rgba(93, 113, 245, 0.6);
         }
 
-        /* ===== ТЕХПОДДЕРЖКА ===== */
         .support-container {
             padding: 5px;
         }
@@ -427,7 +425,6 @@
             font-style: italic;
         }
 
-        /* Стили для уведомления о копировании */
         .copy-notification {
             position: fixed;
             top: 50%;
@@ -526,7 +523,6 @@
     </style>
 </head>
 <body>
-    <!-- Уведомление о копировании -->
     <div id="copyNotification" class="copy-notification">Email скопирован!</div>
     
     <div class="top-menu">
@@ -632,7 +628,7 @@
         <h2>Поиск товаров</h2>
         <form class="search-form" method="GET" action="{{ url_for('customer_search') }}">
             <input type="text" name="q" class="search-input" placeholder="Введите название товара, артикул или содержимое QR-кода..." value="{{ search_query }}">
-            <button type="submit" class="search-button">🔍 Найти товары</button>
+            <button type="submit" class="search-button"> Найти товары</button>
         </form>
 
         {% if search_query %}
